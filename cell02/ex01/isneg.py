@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-n = float(input())
+n = int(input())
 
 if n < 0:
     print("This number is negative.")
