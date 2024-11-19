@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 n = float(input())
 
 if n == 0:
