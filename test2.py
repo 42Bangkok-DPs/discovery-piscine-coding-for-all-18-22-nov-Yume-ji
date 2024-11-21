@@ -1,5 +1,3 @@
-from board import board  # นำเข้าข้อมูลกระดานจากไฟล์ board.py
-
 def is_king_in_check(board):
     # หาตำแหน่งของ King
     n = len(board)
@@ -73,5 +71,16 @@ def is_king_in_check(board):
     # ถ้าไม่พบการโจมตีจากหมากใดๆ
     print("Fail")
 
-# เรียกใช้งานฟังก์ชัน
+# ตัวอย่างการใช้งาน:
+board = [
+    "........",
+    "........",
+    "........",
+    "....K...",
+    "........",
+    "........",
+    "........",
+    "...R...."
+]
+
 is_king_in_check(board)
