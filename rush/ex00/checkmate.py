@@ -1,4 +1,4 @@
-from board import board  # นำเข้าข้อมูลกระดานจากไฟล์ board.py
+from main import board  # นำเข้าข้อมูลกระดานจากไฟล์ main.py
 
 def is_king_in_check(board):
     # หาตำแหน่งของ King
