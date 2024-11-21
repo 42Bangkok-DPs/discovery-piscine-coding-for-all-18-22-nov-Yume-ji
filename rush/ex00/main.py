@@ -1,89 +1,86 @@
-#/usr/bin/env python3
-
-board = [0] * 8
-
-for i in range(len(board)):
-    board[i] = ["__"] * 8
-
-def print_board(board):
-    for i, row in enumerate(board):
-        print(8 - i, end = ": ")
-        for j, col in enumerate(row):
-            print(col, end = " ")
-        print("\n")
-    print("   a   b   c   d   e   f   g   h")
-
-white_piece_map = {
-    "wP": [(6, 0), (6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7)],
-    "wN": [(7, 1), (7, 6)],
-    "wB": [(7, 2), (7, 5)],
-    "wR": [(7, 0), (7, 7)],
-    "wQ": [(7, 3)],
-    "wK": [(7, 4)]
-}
-
-black_piece_map = {
-    "bP": [(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7)],
-    "bN": [(0, 1), (0, 6)],
-    "bB": [(0, 2), (0, 5)],
-    "bR": [(0, 0), (0, 7)],
-    "bQ": [(0, 3)],
-    "bK": [(0, 4)]
-}
-
-col_map = {
-    "a": 0,
-    "b": 1,
-    "c": 2,
-    "d": 3,
-    "e": 4,
-    "f": 5,
-    "g": 6,
-    "h": 7
-}
-
-def put_pieces(board):
-    for piece, squares in white_piece_map.items():
-        for square in squares:
-            x, y = square[0], square[1]
-            board[x][y] = piece
-
-    for piece, squares in black_piece_map.items():
-        for square in squares:
-            x, y = square[0], square[1]
-            board[x][y] = piece
-
-put_pieces(board)
-
-curr_turn = 1
-
-while(True):
-    print_board(board)
-    print("")
-
-    curr_player = ""
-    if curr_turn % 2 == 1:
-        curr_player = "White"
-    else:
-        curr_player = "Black"
+def is_king_in_check(board):
+    # หาตำแหน่งของ King
+    n = len(board)
+    king_position = None
+    for row in range(n):
+        for col in range(n):
+            if board[row][col] == 'K':
+                king_position = (row, col)
+                break
+        if king_position:
+            break
     
-    curr_turn += 1
+    if not king_position:
+        print("Error: King not found")
+        return
 
-    print(curr_player + " to move!")
-    print("")
-    
-    starting_square = input("Enter the square whose piece you'd like to play: ")
-    start_x, start_y = starting_square[0], starting_square[1]
-    start_x = col_map[start_x]
-    start_y = 8 - int(start_y)
-    start_x, start_y = start_y, start_x
+    king_row, king_col = king_position
 
-    ending_square = input("Enter the square you'd like to move your piece to: ")
-    end_x, end_y = ending_square[0], ending_square[1]
-    end_x = col_map[end_x]
-    end_y = 8 - int(end_y)
-    end_x, end_y = end_y, end_x
+    # ทิศทางที่หมากประเภท Rook และ Queen สามารถโจมตีได้ (แนวตั้งและแนวนอน)
+    rook_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    # ทิศทางที่หมากประเภท Bishop และ Queen สามารถโจมตีได้ (แนวทแยง)
+    bishop_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+    # ทิศทางที่ Pawn สามารถโจมตีได้ (ทแยงไปข้างหน้า)
+    pawn_attacks = [(-1, -1), (-1, 1)] if king_row > 0 else []
 
-    temp = board[start_x][start_y]
-    board[start_x][start_y] = "  "
-    board[end_x][end_y] = temp
+    # ตรวจสอบทิศทางการโจมตีของ Rook และ Queen
+    for direction in rook_directions:
+        row, col = king_row, king_col
+        while True:
+            row += direction[0]
+            col += direction[1]
+            if 0 <= row < n and 0 <= col < n:
+                piece = board[row][col]
+                if piece == '.':
+                    continue
+                elif piece == 'R' or piece == 'Q':  # Rook หรือ Queen
+                    print("Success")
+                    return
+                else:
+                    break
+            else:
+                break
+
+    # ตรวจสอบทิศทางการโจมตีของ Bishop และ Queen
+    for direction in bishop_directions:
+        row, col = king_row, king_col
+        while True:
+            row += direction[0]
+            col += direction[1]
+            if 0 <= row < n and 0 <= col < n:
+                piece = board[row][col]
+                if piece == '.':
+                    continue
+                elif piece == 'B' or piece == 'Q':  # Bishop หรือ Queen
+                    print("Success")
+                    return
+                else:
+                    break
+            else:
+                break
+
+    # ตรวจสอบการโจมตีจาก Pawn
+    for direction in pawn_attacks:
+        row = king_row + direction[0]
+        col = king_col + direction[1]
+        if 0 <= row < n and 0 <= col < n:
+            if board[row][col] == 'P':  # Pawn สามารถโจมตีในทิศทางทแยง
+                print("Success")
+                return
+
+    # ถ้าไม่พบการโจมตีจากหมากใดๆ
+    print("Fail")
+
+# ตัวอย่างการใช้งาน:
+board = [
+    "........",
+    "........",
+    "........",
+    "....K...",
+    "........",
+    "........",
+    "........",
+    "...R...."
+]
+
+is_king_in_check(board)
